@@ -1,11 +1,12 @@
 package main
 
 import (
+	"net/http"
+	"encoding/json"
     //for RESTful API
     "github.com/go-martini/martini"
     //for sqlite3 storage, from drivers of go-wiki: https://code.google.com/p/go-wiki/wiki/SQLDrivers
     //"github.com/mattn/go-sqlite3"
-    import "code,google.com/p/go-sqlite/go1/sqlite3"
 
 )
 
@@ -15,10 +16,11 @@ func main() {
     m.Get("/", func() string {
         return "Hello world"
     })
-
-    m.Get("/hello/:name", func() string {
+	
+    m.Get("/hello/:name", func(params martini.Params) string {
         return "Hello " + params["name"]
     })
+	
 
 
     //Create
@@ -30,7 +32,8 @@ func main() {
     //Read one
     //GET http://localhost:3000/task/:id
     m.Get("/task/:id", func() {
-
+		src_json :=byte(`{"age": 21, "married": true}`)
+		fmt.Printf(src_json)
     })
     
     //Read all
@@ -51,6 +54,13 @@ func main() {
 
     })
 
+
     m.Run()
 }
-
+/*
+//middleware function
+func MapEncoder(c martini.Context, w http.ResponseWriter, r *http.Request) {
+	c.MapTo(jsonEncoder{}, (*Encoder)(nil))
+	w.Header().Set("Content-Type", "application/json")
+}
+*/
