@@ -2,17 +2,12 @@ package main
 
 import (
 	"fmt"
-	//"bytes"
-	//"net/http"
 	"encoding/json"
 	"log"
-	//"builtin"  //define for append(slice []Type, elems ...Type) []Type
-
 	//for RESTful API
 	"github.com/codegangsta/martini"
 	"github.com/codegangsta/martini-contrib/binding"
 	//"github.com/astaxie/beego"
-
 	//for sqlite3 storage, from drivers of go-wiki: https://code.google.com/p/go-wiki/wiki/SQLDrivers
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
