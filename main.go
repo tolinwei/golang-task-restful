@@ -1,13 +1,15 @@
 package main
 
 import (
-	//"fmt"
+	"fmt"
 	//"bytes"
+	//"net/http"
 	"log"
 	"encoding/json"
+	//"builtin"  //define for append(slice []Type, elems ...Type) []Type
 
     //for RESTful API
-    "github.com/go-martini/martini"
+    "github.com/codegangsta/martini"
 	"github.com/codegangsta/martini-contrib/binding"
 	//"github.com/astaxie/beego"
 
@@ -17,30 +19,69 @@ import (
 )
 
 type Task struct {
-	Description	string;
-	Due			string;
-	Completed	bool;	
+	Description	string	`form: "Description" json:"Descrioption" binding:"required"`
+	Due			string	`form: "Due" json:"Due"`
+	Completed	bool	`form: "Completed" json:"Completed"`
 }
 
 func main() {
 	m := martini.Classic()
 
-	m.Post("/task/add/json.data", func() []byte {
-		return []byte(`test byte data`)	
+	//get database
+	db, err := sql.Open("sqlite3", "./db_tasks.db")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	//using martini-contrib for receiving incoming JSON
+	m.Post("/task/add/data.json", binding.Json(Task{}), func(task Task) {
+		stmt, err := db.Prepare(`Insert Into t_tasks
+								 (description, due, completed)
+								 values (?, ?, ?)`)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer stmt.Close()
+
+		_, err = stmt.Exec(task.Description, task.Due, task.Completed)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		//fmt.Println(task.Description)
+		//return []byte(`test byte data`)	
+		//return task.Description
+	})
+
+	m.Get("/task/list", func() []byte {
+		//define SQL
+		rows, err := db.Query(`Select description, due, completed
+							   From t_tasks`)
+		if err != nil {
+			fmt.Println(err)
+			log.Fatal(err)
+		}
+		defer rows.Close()
+		//create a Struct array
+		res := []Task{}
+		for rows.Next() {
+			//var tempID string
+			t := Task{}
+			rows.Scan(&t.Description, &t.Due, &t.Completed)
+			//append things after the array
+			res = append(res, t)
+		}
+		ret_json, err := json.Marshal(res)
+		return ret_json
+		//return []byte(`test byte data`)
 	})
 
 	m.Get("/task/:id", func(params martini.Params) []byte {
-		//get database
-		db, err := sql.Open("sqlite3", "./db_tasks.db")
-		if err != nil {
-			//Fatal is equivaleng to Printf() followed by a call to os.Exit(1)
-			log.Fatal(err)
-		}
-		defer db.Close()
 		//define SQL
 		stmt, err := db.Prepare(`Select description, due, completed
-							   From t_tasks
-							   Where id = ?`)
+							     From t_tasks
+							     Where id = ?`)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -51,7 +92,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		//now should be equals to-> m := Task{"text", "2008-01-01 10:00:00", 0}
+		//now should be equals to-> m := Task{"text", "2008-01-01 10:00:00", 0} for record 1
 		ret_json, err := json.Marshal(t)
 		if err != nil {
 			log.Fatal(err)
@@ -60,49 +101,35 @@ func main() {
 		return ret_json
 	})
 
-	m.Get("/task/list", func() []byte {
-		/*
-		//get database
-		db, err := sql.Open("sqlite3", "./db_tasks.db")
+	m.Put("/task/:id/data.json", binding.Json(Task{}), func(params martini.Params, task Task) {
+		stmt, err := db.Prepare(`Update t_tasks
+								Set description=?, due=?, completed=?
+								Where id=?`)
+		if err != nil {
+			log.Fatal(err)	
+		}
+		defer stmt.Close()
+
+		_, err = stmt.Exec(task.Description, task.Due, task.Completed, params["id"])
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer db.Close()
-		//define SQL
-		rows, err := db.Query("Select *
-							   From t_tasks")
+		//return []byte(`test byte data`)
+
+	})
+
+	m.Delete("/task/delete/:id", func(params martini.Params) {
+		stmt, err := db.Prepare(`Delete From t_tasks
+								Where id = ?`)
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer rows.Close()
-
-		//create a Map
-
-		for rows.Next() {
-			var description string;
-			var due			string;
-			var completed	boolean;
-			rows.Scan(&description, &due, &completed)
-			//append things after the map
+		defer stmt.Close()
+		_, err = stmt.Exec(params["id"])
+		if err != nil {
+			log.Fatal(err)
 		}
-		*/
-		return []byte(`test byte data`)
-	})
-
-	m.Post("/task/add", binding.Bind(Task{}), func(task Task) []byte {
-
-		return []byte(`test byte data`)
-
-	})
-
-	m.Put("/task/:id/data.json", binding.Bind(Task{}), func(task Task) []byte {
-		return []byte(`test byte data`)
-
-	})
-
-	m.Delete("/task/delete/:id", func(task Task) []byte {
-		return []byte(`test byte data`)
-
+		//return []byte(`test byte data`)
 	})
 
 	m.Run()
