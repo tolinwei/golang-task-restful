@@ -7,9 +7,9 @@ import (
 	//for RESTful API
 	"github.com/codegangsta/martini"
 	"github.com/codegangsta/martini-contrib/binding"
-	//"github.com/astaxie/beego"
 	//for sqlite3 storage, from drivers of go-wiki: https://code.google.com/p/go-wiki/wiki/SQLDrivers
 	"database/sql"
+	//use the initialization inside without actual use it: http://golang.org/doc/effective_go.html#blank
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -17,6 +17,10 @@ type Task struct {
 	Description string `form: "Description" json:"Descrioption" binding:"required"`
 	Due         string `form: "Due" json:"Due"`
 	Completed   bool   `form: "Completed" json:"Completed"`
+}
+
+type Error struct {
+	message string
 }
 
 func main() {
