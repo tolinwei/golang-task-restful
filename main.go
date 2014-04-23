@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 	"log"
 	//for RESTful API
 	"github.com/codegangsta/martini"
@@ -32,8 +32,8 @@ func main() {
 	//using martini-contrib for receiving incoming JSON
 	m.Post("/task/add/data.json", binding.Json(Task{}), func(task Task) {
 		stmt, err := db.Prepare(`Insert Into t_tasks
-								 (description, due, completed)
-								 values (?, ?, ?)`)
+					 (description, due, completed)
+					 values (?, ?, ?)`)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -43,16 +43,12 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		//fmt.Println(task.Description)
-		//return []byte(`test byte data`)
-		//return task.Description
 	})
 
 	m.Get("/task/list", func() []byte {
 		//define SQL
 		rows, err := db.Query(`Select description, due, completed
-							   From t_tasks`)
+				       From t_tasks`)
 		if err != nil {
 			fmt.Println(err)
 			log.Fatal(err)
@@ -69,14 +65,13 @@ func main() {
 		}
 		ret_json, err := json.Marshal(res)
 		return ret_json
-		//return []byte(`test byte data`)
 	})
 
 	m.Get("/task/:id", func(params martini.Params) []byte {
 		//define SQL
 		stmt, err := db.Prepare(`Select description, due, completed
-							     From t_tasks
-							     Where id = ?`)
+					 From t_tasks
+					 Where id = ?`)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -92,14 +87,13 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		//return []byte(`test byte data`)
 		return ret_json
 	})
 
 	m.Put("/task/:id/data.json", binding.Json(Task{}), func(params martini.Params, task Task) {
 		stmt, err := db.Prepare(`Update t_tasks
-								Set description=?, due=?, completed=?
-								Where id=?`)
+					 Set description=?, due=?, completed=?
+					 Where id=?`)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -109,13 +103,11 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		//return []byte(`test byte data`)
-
 	})
 
 	m.Delete("/task/delete/:id", func(params martini.Params) {
 		stmt, err := db.Prepare(`Delete From t_tasks
-								Where id = ?`)
+					 Where id = ?`)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -124,7 +116,6 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		//return []byte(`test byte data`)
 	})
 
 	m.Run()
