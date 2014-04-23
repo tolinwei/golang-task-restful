@@ -4,24 +4,24 @@ import (
 	"fmt"
 	//"bytes"
 	//"net/http"
-	"log"
 	"encoding/json"
+	"log"
 	//"builtin"  //define for append(slice []Type, elems ...Type) []Type
 
-    //for RESTful API
-    "github.com/codegangsta/martini"
+	//for RESTful API
+	"github.com/codegangsta/martini"
 	"github.com/codegangsta/martini-contrib/binding"
 	//"github.com/astaxie/beego"
 
-    //for sqlite3 storage, from drivers of go-wiki: https://code.google.com/p/go-wiki/wiki/SQLDrivers
+	//for sqlite3 storage, from drivers of go-wiki: https://code.google.com/p/go-wiki/wiki/SQLDrivers
 	"database/sql"
-    _ "github.com/mattn/go-sqlite3"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type Task struct {
-	Description	string	`form: "Description" json:"Descrioption" binding:"required"`
-	Due			string	`form: "Due" json:"Due"`
-	Completed	bool	`form: "Completed" json:"Completed"`
+	Description string `form: "Description" json:"Descrioption" binding:"required"`
+	Due         string `form: "Due" json:"Due"`
+	Completed   bool   `form: "Completed" json:"Completed"`
 }
 
 func main() {
@@ -50,7 +50,7 @@ func main() {
 		}
 
 		//fmt.Println(task.Description)
-		//return []byte(`test byte data`)	
+		//return []byte(`test byte data`)
 		//return task.Description
 	})
 
@@ -106,7 +106,7 @@ func main() {
 								Set description=?, due=?, completed=?
 								Where id=?`)
 		if err != nil {
-			log.Fatal(err)	
+			log.Fatal(err)
 		}
 		defer stmt.Close()
 
