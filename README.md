@@ -5,7 +5,7 @@ a RESTful service that will support the maintenance of a simple list of todo’s
 
 ###Installation
 
-- After cloning this repository into your local, make sure `$GOROOT` and `$GOPATH` is set properly, by adding the follwing lines into your ~/.bashrc or ~/.profile (assume you've installed Go at `/usr/local/go` and cloned the repository to ~/Code/golang-task-restful
+- After cloning this repository into your local, make sure `$GOROOT` and `$GOPATH` is set properly, by adding the follwing lines into your ~/.bashrc or ~/.profile (assume you've installed Go at `/usr/local/go` and cloned the repository to ~/Code/golang-task-restful)
 ```
 $export GOROOT=/usr/local/go
 $export GOPATH=~/Code/golang-task-restful
