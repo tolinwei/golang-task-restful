@@ -1,12 +1,11 @@
 ##golang-task-restful
 
 
-
 a RESTful service that will support the maintenance of a simple list of todo’s
 
 ###Installation
 
-- After clone this repository into your local, make sure `$GOROOT` and `$GOPATH` is set properly, by adding the follwing lines into your ~/.bashrc or ~/.profile (assume you've installed Go at `/usr/local/go` and cloned the repository to ~/Code/golang-task-restful
+- After cloning this repository into your local, make sure `$GOROOT` and `$GOPATH` is set properly, by adding the follwing lines into your ~/.bashrc or ~/.profile (assume you've installed Go at `/usr/local/go` and cloned the repository to ~/Code/golang-task-restful
 ```
 $export GOROOT=/usr/local/go
 $export GOPATH=~/Code/golang-task-restful
@@ -33,4 +32,48 @@ $go get github.com/mattn/go-sqlite3
 
 ### Usage Examples
 
+
+- To create new task:
+```
+$curl -X POST -H "Content-Type: application/json" -d '{"description":"test_des","due":"2020-01-01 10:00:00","completed":false}' http://localhost:3000/task/add/data.json
+```
+Then you will get `{"status":"success"}` or `{"status":"error", "message": MESSAGE}`, in which MESSAGE represents the actual error message.
+
+- To query all the tasks:
+```
+$curl -X GET http://localhost:3000/task/list
+```
+Then you will get output similar to:
+```
+{"results":[{"description":"text","due":"2008-01-01 10:00:00","completed":false},{"description":"second task","due":"2014-04-22 10:51:00","completed":true},{"description":"cont","due":"2018-01-01 10:00:00","completed":false},{"description":"cont2","due":"2028-01-01 10:00:00","completed":false},{"description":"","due":"2050-01-01 10:00:00","completed":false},{"description":"test_des","due":"2050-01-01 10:00:00","completed":false},{"description":"test_des","due":"2020-01-01 10:00:00","completed":false}],"status":"success"}
+```
+The value of `"results"` is a JSON list. Or you may get `{"status":"error", "message": MESSAGE}` with error message.
+
+- To fetch certain task by denoting its id (here use 1 as example)
+```
+$curl -X GET http://localhost:3000/task/1
+```
+Then you will get:
+```
+{"results":{"description":"text","due":"2008-01-01 10:00:00","completed":false},"status":"success"}
+```
+or `{"status":"error", "message": MESSAGE}` with error message.
+
+- To update certain task by denoting its id (here also use 1 as example)
+```
+$curl -X POST -H "Content-Type: application/json" -d '{"description":"test_des","due":"2050-01-01 10:00:00","completed":false}' http://localhost:3000/task/add/data.json
+```
+Then you will get `{"status":"success"}` or `{"status":"error", "message": MESSAGE}` with error message.
+
+
+- To delete certain task by denoting its id (here also use a as example)
+```
+$curl -X DELETE http://localhost:3000/task/delete/1
+```
+Then you will get `{"status":"success"}` or `{"status":"error", "message": MESSAGE}` with error message.
+
+
+###Author
+
+[Wei Lin](http://www.github.com/ivanlw)
 
