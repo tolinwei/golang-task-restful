@@ -1,12 +1,14 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
+	//"encoding/json"
+	//"fmt"
 	"log"
+	//"reflect"
 	//for RESTful API
 	"github.com/codegangsta/martini"
 	"github.com/codegangsta/martini-contrib/binding"
+	"github.com/codegangsta/martini-contrib/render" //for rendering returning JSON
 	//for sqlite3 storage, from drivers of go-wiki: https://code.google.com/p/go-wiki/wiki/SQLDrivers
 	"database/sql"
 	//use the initialization inside without actual use it: http://golang.org/doc/effective_go.html#blank
@@ -14,18 +16,17 @@ import (
 )
 
 type Task struct {
-	Description string `form: "Description" json:"Descrioption" binding:"required"`
-	Due         string `form: "Due" json:"Due"`
-	Completed   bool   `form: "Completed" json:"Completed"`
-}
-
-type Error struct {
-	message string
+	Description string `json:"description" binding:"required"`
+	Due         string `json:"due"`
+	Completed   bool   `json:"completed"`
 }
 
 func main() {
 	m := martini.Classic()
 
+	m.Use(render.Renderer())
+
+	//ret_map := make(map[string]interface{}
 	//get database
 	db, err := sql.Open("sqlite3", "./db_tasks.db")
 	if err != nil {
@@ -33,29 +34,33 @@ func main() {
 	}
 	defer db.Close()
 
-	//using martini-contrib for receiving incoming JSON
-	m.Post("/task/add/data.json", binding.Json(Task{}), func(task Task) {
+	//using martini-contrib/binding for receiving incoming JSON
+	m.Post("/task/add/data.json", binding.Json(Task{}), func(task Task, r render.Render) {
 		stmt, err := db.Prepare(`Insert Into t_tasks
 					 (description, due, completed)
-					 values (?, ?, ?)`)
+					 Values (?, ?, ?)`)
 		if err != nil {
-			log.Fatal(err)
+			r.JSON(500, map[string]interface{}{"status": "error", "message": err.Error()})
+			return
 		}
 		defer stmt.Close()
 
 		_, err = stmt.Exec(task.Description, task.Due, task.Completed)
+		//_, err = stmt.Exec(task.description, task.due, task.completed)
 		if err != nil {
-			log.Fatal(err)
+			r.JSON(500, map[string]interface{}{"status": "error", "message": err.Error()})
+			return
 		}
+		r.JSON(200, map[string]interface{}{"status": "success"})
 	})
 
-	m.Get("/task/list", func() []byte {
+	m.Get("/task/list", func(r render.Render) {
 		//define SQL
 		rows, err := db.Query(`Select description, due, completed
 				       From t_tasks`)
 		if err != nil {
-			fmt.Println(err)
-			log.Fatal(err)
+			r.JSON(500, map[string]interface{}{"status": "error", "message": err.Error()})
+			return
 		}
 		defer rows.Close()
 		//create a Struct array
@@ -64,62 +69,72 @@ func main() {
 			//var tempID string
 			t := Task{}
 			rows.Scan(&t.Description, &t.Due, &t.Completed)
+			//rows.Scan(&t.description, &t.due, &t.completed)
 			//append things after the array
 			res = append(res, t)
 		}
-		ret_json, err := json.Marshal(res)
-		return ret_json
+		/*
+			ret_json, err := json.Marshal(res)
+			return ret_json
+		*/
+		r.JSON(200, map[string]interface{}{"status": "success", "results": res})
 	})
 
-	m.Get("/task/:id", func(params martini.Params) []byte {
+	m.Get("/task/:id", func(params martini.Params, r render.Render) {
 		//define SQL
 		stmt, err := db.Prepare(`Select description, due, completed
 					 From t_tasks
 					 Where id = ?`)
 		if err != nil {
-			log.Fatal(err)
+			r.JSON(500, map[string]interface{}{"status": "error", "message": err.Error()})
+			return
 		}
 		defer stmt.Close()
 		//execute with parameter
 		t := Task{}
 		err = stmt.QueryRow(params["id"]).Scan(&t.Description, &t.Due, &t.Completed)
+		//err = stmt.QueryRow(params["id"]).Scan(&t.description, &t.due, &t.completed)
 		if err != nil {
-			log.Fatal(err)
+			r.JSON(500, map[string]interface{}{"status": "error", "message": err.Error()})
+			return
 		}
-		//now should be equals to-> m := Task{"text", "2008-01-01 10:00:00", 0} for record 1
-		ret_json, err := json.Marshal(t)
-		if err != nil {
-			log.Fatal(err)
-		}
-		return ret_json
+		//r.JSON(200, map[string]interface{}{"status": "success", "results": Task{"a", "b", false}})
+		r.JSON(200, map[string]interface{}{"status": "success", "results": t})
 	})
 
-	m.Put("/task/:id/data.json", binding.Json(Task{}), func(params martini.Params, task Task) {
+	m.Put("/task/:id/data.json", binding.Json(Task{}), func(params martini.Params, task Task, r render.Render) {
 		stmt, err := db.Prepare(`Update t_tasks
 					 Set description=?, due=?, completed=?
 					 Where id=?`)
 		if err != nil {
-			log.Fatal(err)
+			r.JSON(500, map[string]interface{}{"status": "error", "message": err.Error()})
+			return
 		}
 		defer stmt.Close()
 
 		_, err = stmt.Exec(task.Description, task.Due, task.Completed, params["id"])
+		//_, err = stmt.Exec(task.description, task.due, task.completed, params["id"])
 		if err != nil {
-			log.Fatal(err)
+			r.JSON(500, map[string]interface{}{"status": "error", "message": err.Error()})
+			return
 		}
+		r.JSON(200, map[string]interface{}{"status": "success"})
 	})
 
-	m.Delete("/task/delete/:id", func(params martini.Params) {
+	m.Delete("/task/delete/:id", func(params martini.Params, r render.Render) {
 		stmt, err := db.Prepare(`Delete From t_tasks
 					 Where id = ?`)
 		if err != nil {
-			log.Fatal(err)
+			r.JSON(500, map[string]interface{}{"status": "error", "message": err.Error()})
+			return
 		}
 		defer stmt.Close()
 		_, err = stmt.Exec(params["id"])
 		if err != nil {
-			log.Fatal(err)
+			r.JSON(500, map[string]interface{}{"status": "error", "message": err.Error()})
+			return
 		}
+		r.JSON(200, map[string]interface{}{"status": "success"})
 	})
 
 	m.Run()
