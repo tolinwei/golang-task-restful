@@ -75,5 +75,5 @@ Then you will get `{"status":"success"}` or `{"status":"error", "message": MESSA
 
 ###Author
 
-[Wei Lin](http://www.github.com/ivanlw)
+**[Wei Lin]**(http://www.github.com/ivanlw)
 
