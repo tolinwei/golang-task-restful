@@ -1,10 +1,8 @@
 package main
 
 import (
-	//"encoding/json"
 	//"fmt"
 	"log"
-	//"reflect"
 	//for RESTful API
 	"github.com/codegangsta/martini"
 	"github.com/codegangsta/martini-contrib/binding"
@@ -26,7 +24,6 @@ func main() {
 
 	m.Use(render.Renderer())
 
-	//ret_map := make(map[string]interface{}
 	//get database
 	db, err := sql.Open("sqlite3", "./db_tasks.db")
 	if err != nil {
@@ -46,16 +43,16 @@ func main() {
 		defer stmt.Close()
 
 		_, err = stmt.Exec(task.Description, task.Due, task.Completed)
-		//_, err = stmt.Exec(task.description, task.due, task.completed)
+
 		if err != nil {
 			r.JSON(500, map[string]interface{}{"status": "error", "message": err.Error()})
 			return
 		}
+
 		r.JSON(200, map[string]interface{}{"status": "success"})
 	})
 
 	m.Get("/task/list", func(r render.Render) {
-		//define SQL
 		rows, err := db.Query(`Select description, due, completed
 				       From t_tasks`)
 		if err != nil {
@@ -63,20 +60,17 @@ func main() {
 			return
 		}
 		defer rows.Close()
+
 		//create a Struct array
 		res := []Task{}
 		for rows.Next() {
 			//var tempID string
 			t := Task{}
 			rows.Scan(&t.Description, &t.Due, &t.Completed)
-			//rows.Scan(&t.description, &t.due, &t.completed)
 			//append things after the array
 			res = append(res, t)
 		}
-		/*
-			ret_json, err := json.Marshal(res)
-			return ret_json
-		*/
+
 		r.JSON(200, map[string]interface{}{"status": "success", "results": res})
 	})
 
@@ -93,12 +87,12 @@ func main() {
 		//execute with parameter
 		t := Task{}
 		err = stmt.QueryRow(params["id"]).Scan(&t.Description, &t.Due, &t.Completed)
-		//err = stmt.QueryRow(params["id"]).Scan(&t.description, &t.due, &t.completed)
+
 		if err != nil {
 			r.JSON(500, map[string]interface{}{"status": "error", "message": err.Error()})
 			return
 		}
-		//r.JSON(200, map[string]interface{}{"status": "success", "results": Task{"a", "b", false}})
+
 		r.JSON(200, map[string]interface{}{"status": "success", "results": t})
 	})
 
@@ -113,7 +107,7 @@ func main() {
 		defer stmt.Close()
 
 		_, err = stmt.Exec(task.Description, task.Due, task.Completed, params["id"])
-		//_, err = stmt.Exec(task.description, task.due, task.completed, params["id"])
+
 		if err != nil {
 			r.JSON(500, map[string]interface{}{"status": "error", "message": err.Error()})
 			return
@@ -134,6 +128,7 @@ func main() {
 			r.JSON(500, map[string]interface{}{"status": "error", "message": err.Error()})
 			return
 		}
+
 		r.JSON(200, map[string]interface{}{"status": "success"})
 	})
 
