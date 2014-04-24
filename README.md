@@ -73,7 +73,11 @@ $curl -X DELETE http://localhost:3000/task/delete/1
 Then you will get `{"status":"success"}` or `{"status":"error", "message": MESSAGE}` with error message.
 
 
+###References
+**[JSend](http://labs.omniti.com/labs/jsend)** A specification that lays down some rules for how JSON responses from server should be formatted.
+
+
 ###Author
 
-**[Wei Lin]**(http://www.github.com/ivanlw)
+**[Wei Lin](http://www.github.com/ivanlw)**
 
