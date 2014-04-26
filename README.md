@@ -9,9 +9,9 @@ A RESTful Service that Supports the Maintenance of A Simple List of TODO’s
 $export GOROOT=/usr/local/go
 $export GOPATH=~/Code/golang-task-restful
 ```
-then `source ~/.bashrc` or `source ~/.profile` or restart your terminal
+then `$source ~/.bashrc` or `$source ~/.profile` or restart your terminal
 
-- golang-task-restful uses sqlite3 as backend storage, make sure you have sqlite3 installed on your machine. There's issue to `go get github.com/mattn/go-sqlite3` on Mac plateform using default copmiler, which is the command line tool of Xcode, please refer [here](https://github.com/mattn/go-sqlite3/issues/45). So Mac is not supported for current vertion.
+- golang-task-restful uses sqlite3 as backend storage, make sure you have sqlite3 installed on your machine. There's issue to `$go get github.com/mattn/go-sqlite3` on Mac plateform using default copmiler, which is the command line tool of Xcode, please refer [here](https://github.com/mattn/go-sqlite3/issues/45). So Mac is not supported for current vertion.
 ```
 $sudo apt-get install sqlite3
 ```
