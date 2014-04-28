@@ -74,7 +74,7 @@ Then you will get `{"status":"success"}` or `{"status":"error", "message": MESSA
 
 ###References
 - [JSend](http://labs.omniti.com/labs/jsend) A specification that lays down some rules for how JSON responses from server should be formatted.
-- [Vim plugins for golang](golang.org/misc/vim/readme.txt)
+- [Vim plugins for golang](http://golang.org/misc/vim/readme.txt)
 
 
 ###Author
