@@ -1,6 +1,6 @@
 ##golang-task-restful
 
-A RESTful service supports the maintenance of a simple list of todo’s
+RESTful service supports the maintenance of a simple list of todo’s
 
 ###Installation
 
