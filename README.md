@@ -1,8 +1,8 @@
-##golang-task-restful
+#golang-task-restful
 
 RESTful service supports the maintenance of a simple list of todo’s
 
-###Installation
+##Installation
 
 - After cloning this repository into your local, make sure `$GOROOT` and `$GOPATH` is set properly, by adding the follwing lines into your ~/.bashrc or ~/.profile (assume you've installed Go at `/usr/local/go` and cloned the repository to ~/Code/golang-task-restful)
 ```
@@ -29,7 +29,7 @@ $go get github.com/mattn/go-sqlite3
 ```
 - `$go run main.go` to enjoy it!
 
-### Usage Examples
+## Usage Examples
 
 
 - To create new task:
@@ -72,7 +72,7 @@ $curl -X DELETE http://localhost:3000/task/delete/1
 Then you will get `{"status":"success"}` or `{"status":"error", "message": MESSAGE}` with error message.
 
 
-###References
+##References
 - [JSend](http://labs.omniti.com/labs/jsend) A specification that lays down some rules for how JSON responses from server should be formatted.
 - [Vim plugins for golang](http://golang.org/misc/vim/readme.txt)
 
