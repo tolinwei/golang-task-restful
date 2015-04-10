@@ -79,5 +79,5 @@ Then you will get `{"status":"success"}` or `{"status":"error", "message": MESSA
 
 ##Author
 
-**[Wei Lin](http://www.linkedin.com/in/ivanlw/)**
+[Wei Lin](http://www.linkedin.com/in/ivanlw/)
 
